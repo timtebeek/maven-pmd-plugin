@@ -31,6 +31,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.pmd.ExcludeViolationsFromFile;
@@ -58,7 +59,6 @@ import net.sourceforge.pmd.renderers.HTMLRenderer;
 import net.sourceforge.pmd.renderers.Renderer;
 import net.sourceforge.pmd.renderers.TextRenderer;
 import net.sourceforge.pmd.renderers.XMLRenderer;
-import net.sourceforge.pmd.util.Predicate;
 
 /**
  * Executes PMD with the configuration provided via {@link PmdRequest}.
