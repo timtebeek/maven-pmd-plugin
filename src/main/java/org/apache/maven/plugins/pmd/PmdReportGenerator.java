@@ -166,7 +166,7 @@ public class PmdReportGenerator
         sink.sectionTitle_( level );
 
         sink.table();
-        sink.tableRows( null, false );
+        sink.tableRows();
         sink.tableRow();
         sink.tableHeaderCell();
         sink.text( bundle.getString( "report.pmd.column.rule" ) );
@@ -408,7 +408,7 @@ public class PmdReportGenerator
         } );
 
         sink.table();
-        sink.tableRows( null, false );
+        sink.tableRows();
         sink.tableRow();
         sink.tableHeaderCell();
         sink.text( bundle.getString( "report.pmd.suppressedViolations.column.filename" ) );
@@ -475,7 +475,7 @@ public class PmdReportGenerator
         sink.sectionTitle1_();
 
         sink.table();
-        sink.tableRows( null, false );
+        sink.tableRows();
         sink.tableRow();
         sink.tableHeaderCell();
         sink.text( bundle.getString( "report.pmd.processingErrors.column.filename" ) );

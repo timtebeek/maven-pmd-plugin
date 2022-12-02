@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,7 +46,6 @@ public class CpdReportTest
         throws Exception
     {
         super.setUp();
-        Locale.setDefault( Locale.ENGLISH );
         FileUtils.deleteDirectory( new File( getBasedir(), "target/test/unit" ) );
     }
 

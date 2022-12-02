@@ -48,7 +48,7 @@ public class DefaultConfigurationMavenProjectStub
         Model model = null;
 
         try ( FileReader reader = new FileReader( new File( getBasedir()
-            + "/src/test/resources/unit/default-configuration/default-configuration-plugin-config.xml" ) ) )
+            + "/" + getPOM() ) ) )
         {
             model = pomReader.read( reader );
             setModel( model );
@@ -72,8 +72,8 @@ public class DefaultConfigurationMavenProjectStub
         Build build = new Build();
         build.setFinalName( model.getBuild()
                                  .getFinalName() );
-        build.setDirectory( getBasedir() + "/target/test/unit/default-configuration/target" );
-        build.setSourceDirectory( getBasedir() + "/src/test/resources/unit/default-configuration" );
+        build.setDirectory( getBasedir() + "/target" );
+        build.setSourceDirectory( getBasedir().getAbsolutePath() );
         setBuild( build );
 
         setReportPlugins( model.getReporting()
@@ -81,7 +81,7 @@ public class DefaultConfigurationMavenProjectStub
 
         String basedir = getBasedir().getAbsolutePath();
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( basedir + "/src/test/resources/unit/default-configuration/def/configuration" );
+        compileSourceRoots.add( basedir + "/def/configuration" );
         setCompileSourceRoots( compileSourceRoots );
 
         File file = new File( getBasedir().getAbsolutePath() + "/pom.xml" );
@@ -117,5 +117,15 @@ public class DefaultConfigurationMavenProjectStub
     public Build getBuild()
     {
         return build;
+    }
+
+    @Override
+    public File getBasedir() {
+        return new File( super.getBasedir() + "/default-configuration" );
+    }
+
+    @Override
+    protected String getPOM() {
+        return "default-configuration-plugin-config.xml";
     }
 }

@@ -246,12 +246,6 @@ public abstract class AbstractPmdReport
     // ----------------------------------------------------------------------
 
     /**
-     * The projects in the reactor for aggregation report.
-     */
-    @Parameter( property = "reactorProjects", readonly = true )
-    protected List<MavenProject> reactorProjects;
-
-    /**
      * The current build session instance. This is used for
      * toolchain manager API calls and for dependency resolver API calls.
      */
@@ -264,13 +258,15 @@ public abstract class AbstractPmdReport
     /** The files that are being analyzed. */
     protected Map<File, PmdFileInfo> filesToProcess;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected MavenProject getProject()
     {
         return project;
+    }
+
+    protected List<MavenProject> getReactorProjects()
+    {
+        return reactorProjects;
     }
 
     protected String constructXRefLocation( boolean test )

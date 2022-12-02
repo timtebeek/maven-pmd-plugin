@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +54,6 @@ public class PmdReportTest
         throws Exception
     {
         super.setUp();
-        Locale.setDefault( Locale.ENGLISH );
         FileUtils.deleteDirectory( new File( getBasedir(), "target/test/unit" ) );
     }
 
@@ -93,9 +91,9 @@ public class PmdReportTest
         assertTrue( str.contains( "pmd_rules_java_bestpractices.html#unusedprivatefield\">UnusedPrivateField</a>" ) );
 
         // there should be the section Violations By Priority
-        assertTrue( str.contains( "Violations By Priority</h2>" ) );
-        assertTrue( str.contains( "Priority 3</h3>" ) );
-        assertTrue( str.contains( "Priority 4</h3>" ) );
+        assertTrue( str.contains( "Violations By Priority</h1>" ) );
+        assertTrue( str.contains( "Priority 3</h2>" ) );
+        assertTrue( str.contains( "Priority 4</h2>" ) );
         // the file App.java is mentioned 3 times: in prio 3, in prio 4 and in the files section
         assertEquals( 3, StringUtils.countMatches( str, "def/configuration/App.java" ) );
 
