@@ -23,8 +23,8 @@ import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.Report.ProcessingError;
 import net.sourceforge.pmd.Report.SuppressedViolation;
 import net.sourceforge.pmd.RuleViolation;
+import net.sourceforge.pmd.lang.document.TextFile;
 import net.sourceforge.pmd.renderers.AbstractRenderer;
-import net.sourceforge.pmd.util.datasource.DataSource;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
@@ -147,10 +147,12 @@ public class PmdCollectingRenderer extends AbstractRenderer
     public void start() throws IOException
     {
     }
+
     @Override
-    public void startFileAnalysis( DataSource dataSource )
+    public void startFileAnalysis( TextFile textFile )
     {
     }
+
     @Override
     public void end() throws IOException
     {
