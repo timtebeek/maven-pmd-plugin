@@ -34,7 +34,6 @@ import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.toolchain.Toolchain;
 
 import net.sourceforge.pmd.cpd.JavaTokenizer;
-import net.sourceforge.pmd.cpd.renderer.CPDRenderer;
 
 /**
  * Creates a report for PMD's Copy/Paste Detector (CPD) tool.
@@ -258,18 +257,5 @@ public class CpdReport
     private static ResourceBundle getBundle( Locale locale )
     {
         return ResourceBundle.getBundle( "cpd-report", locale, CpdReport.class.getClassLoader() );
-    }
-
-    /**
-     * Create and return the correct renderer for the output type.
-     *
-     * @return the renderer based on the configured output
-     * @throws org.apache.maven.reporting.MavenReportException if no renderer found for the output type
-     * @deprecated Use {@link CpdExecutor#createRenderer(String, String)} instead.
-     */
-    @Deprecated
-    public CPDRenderer createRenderer() throws MavenReportException
-    {
-        return CpdExecutor.createRenderer( format, getOutputEncoding() );
     }
 }

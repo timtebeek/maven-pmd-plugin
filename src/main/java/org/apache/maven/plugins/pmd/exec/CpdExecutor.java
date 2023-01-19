@@ -28,7 +28,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
+import net.sourceforge.pmd.cpd.CPDReport;
+import net.sourceforge.pmd.cpd.CPDReportFriend;
 import net.sourceforge.pmd.cpd.CSVRenderer;
 import net.sourceforge.pmd.cpd.EcmascriptLanguage;
 import net.sourceforge.pmd.cpd.JSPLanguage;
@@ -50,7 +51,7 @@ import net.sourceforge.pmd.cpd.LanguageFactory;
 import net.sourceforge.pmd.cpd.Match;
 import net.sourceforge.pmd.cpd.SimpleRenderer;
 import net.sourceforge.pmd.cpd.XMLRenderer;
-import net.sourceforge.pmd.cpd.renderer.CPDRenderer;
+import net.sourceforge.pmd.cpd.renderer.CPDReportRenderer;
 
 /**
  * Executes CPD with the configuration provided via {@link CpdRequest}.
@@ -251,7 +252,7 @@ public class CpdExecutor extends Executor
         }
     }
 
-    private File writeReport( CPD cpd, CPDRenderer r, String extension ) throws MavenReportException
+    private File writeReport( CPD cpd, CPDReportRenderer r, String extension ) throws MavenReportException
     {
         if ( r == null )
         {
@@ -264,7 +265,7 @@ public class CpdExecutor extends Executor
         try ( Writer writer = new OutputStreamWriter( new FileOutputStream( targetFile ),
                 request.getOutputEncoding() ) )
         {
-            r.render( filterMatches( cpd.getMatches() ), writer );
+            r.render( filterMatches( cpd.toReport() ), writer );
             writer.flush();
         }
         catch ( IOException ioe )
@@ -277,7 +278,7 @@ public class CpdExecutor extends Executor
     private void writeFormattedReport( CPD cpd )
             throws MavenReportException
         {
-            CPDRenderer r = createRenderer( request.getFormat(), request.getOutputEncoding() );
+            CPDReportRenderer r = createRenderer( request.getFormat(), request.getOutputEncoding() );
             writeReport( cpd, r, request.getFormat() );
 
         }
@@ -288,27 +289,27 @@ public class CpdExecutor extends Executor
      * @return the renderer based on the configured output
      * @throws org.apache.maven.reporting.MavenReportException if no renderer found for the output type
      */
-    public static CPDRenderer createRenderer( String format, String outputEncoding )
+    public static CPDReportRenderer createRenderer( String format, String outputEncoding )
         throws MavenReportException
     {
-        CPDRenderer renderer = null;
+        CPDReportRenderer renderer = null;
         if ( "xml".equals( format ) )
         {
             renderer = new XMLRenderer( outputEncoding );
         }
         else if ( "csv".equals( format ) )
         {
-            renderer = new CSVRenderer();
+            renderer = new CPDReportRendererAdapter( new CSVRenderer() );
         }
         else if ( "txt".equals( format ) )
         {
-            renderer = new SimpleRenderer();
+            renderer = new CPDReportRendererAdapter( new SimpleRenderer() );
         }
         else if ( !"".equals( format ) && !"none".equals( format ) )
         {
             try
             {
-                renderer = (CPDRenderer) Class.forName( format ).getConstructor().newInstance();
+                renderer = (CPDReportRenderer) Class.forName( format ).getConstructor().newInstance();
             }
             catch ( Exception e )
             {
@@ -320,16 +321,15 @@ public class CpdExecutor extends Executor
         return renderer;
     }
 
-    private Iterator<Match> filterMatches( Iterator<Match> matches )
+    private CPDReport filterMatches( CPDReport report )
     {
         LOG.debug( "Filtering duplications. Using " + excludeDuplicationsFromFile.countExclusions()
             + " configured exclusions." );
 
         List<Match> filteredMatches = new ArrayList<>();
         int excludedDuplications = 0;
-        while ( matches.hasNext() )
+        for ( Match match : report.getMatches() )
         {
-            Match match = matches.next();
             if ( excludeDuplicationsFromFile.isExcludedFromFailure( match ) )
             {
                 excludedDuplications++;
@@ -341,7 +341,7 @@ public class CpdExecutor extends Executor
         }
 
         LOG.debug( "Excluded " + excludedDuplications + " duplications." );
-        return filteredMatches.iterator();
+        return CPDReportFriend.newReport( filteredMatches, report.getNumberOfTokensPerFile() );
     }
 
 }
