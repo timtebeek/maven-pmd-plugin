@@ -27,8 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -41,14 +39,12 @@ import org.slf4j.LoggerFactory;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.CPDReport;
-import net.sourceforge.pmd.cpd.CPDReportFriend;
 import net.sourceforge.pmd.cpd.CSVRenderer;
 import net.sourceforge.pmd.cpd.EcmascriptLanguage;
 import net.sourceforge.pmd.cpd.JSPLanguage;
 import net.sourceforge.pmd.cpd.JavaLanguage;
 import net.sourceforge.pmd.cpd.Language;
 import net.sourceforge.pmd.cpd.LanguageFactory;
-import net.sourceforge.pmd.cpd.Match;
 import net.sourceforge.pmd.cpd.SimpleRenderer;
 import net.sourceforge.pmd.cpd.XMLRenderer;
 import net.sourceforge.pmd.cpd.renderer.CPDReportRenderer;
@@ -299,11 +295,11 @@ public class CpdExecutor extends Executor
         }
         else if ( "csv".equals( format ) )
         {
-            renderer = new CPDReportRendererAdapter( new CSVRenderer() );
+            renderer = new CSVRenderer();
         }
         else if ( "txt".equals( format ) )
         {
-            renderer = new CPDReportRendererAdapter( new SimpleRenderer() );
+            renderer = new SimpleRenderer();
         }
         else if ( !"".equals( format ) && !"none".equals( format ) )
         {
@@ -325,23 +321,9 @@ public class CpdExecutor extends Executor
     {
         LOG.debug( "Filtering duplications. Using " + excludeDuplicationsFromFile.countExclusions()
             + " configured exclusions." );
-
-        List<Match> filteredMatches = new ArrayList<>();
-        int excludedDuplications = 0;
-        for ( Match match : report.getMatches() )
-        {
-            if ( excludeDuplicationsFromFile.isExcludedFromFailure( match ) )
-            {
-                excludedDuplications++;
-            }
-            else
-            {
-                filteredMatches.add( match );
-            }
-        }
-
-        LOG.debug( "Excluded " + excludedDuplications + " duplications." );
-        return CPDReportFriend.newReport( filteredMatches, report.getNumberOfTokensPerFile() );
+        CpdReportFilter filter = new CpdReportFilter( excludeDuplicationsFromFile );
+        CPDReport filteredReport = report.filterMatches( filter );
+        LOG.debug( "Excluded " + filter.getExcludedDuplications() + " duplications." );
+        return filteredReport;
     }
-
 }

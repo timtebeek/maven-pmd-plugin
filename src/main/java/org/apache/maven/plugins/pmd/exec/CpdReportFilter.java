@@ -1,4 +1,4 @@
-package net.sourceforge.pmd.cpd.renderer;
+package org.apache.maven.plugins.pmd.exec;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,34 @@ package net.sourceforge.pmd.cpd.renderer;
  * under the License.
  */
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
+import org.apache.maven.plugins.pmd.ExcludeDuplicationsFromFile;
 
 import net.sourceforge.pmd.cpd.Match;
+import net.sourceforge.pmd.util.Predicate;
 
-/**
- * Readd this interface here. Not needed anymore,
- * once <a href="https://github.com/pmd/pmd/pull/4343">[core] CPD - implement
- * CPDReportRenderer for all renderers #4343</a>
- * is done.
- */
-@Deprecated
-public interface CPDRenderer
+class CpdReportFilter implements Predicate<Match>
 {
-    void render( Iterator<Match> var1, Writer var2 ) throws IOException;
+    private final ExcludeDuplicationsFromFile excludeDuplicationsFromFile;
+    private int excludedDuplications = 0;
+
+    CpdReportFilter( ExcludeDuplicationsFromFile excludeDuplicationsFromFile )
+    {
+        this.excludeDuplicationsFromFile = excludeDuplicationsFromFile;
+    }
+
+    @Override
+    public boolean test( Match match )
+    {
+        if ( excludeDuplicationsFromFile.isExcludedFromFailure( match ) )
+        {
+            excludedDuplications++;
+            return false;
+        }
+        return true;
+    }
+
+    int getExcludedDuplications()
+    {
+        return excludedDuplications;
+    }
 }
